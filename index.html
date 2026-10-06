@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#e75480">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self' https://rayshyuxxlknuwdvpfzx.supabase.co; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
+<script>if(window.top!==window.self){try{window.top.location=window.self.location}catch(e){document.documentElement.innerHTML=''}}</script>
 <title>Nail Agenda 💅</title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,14 +239,57 @@ nav.bottom-nav{display:none}
   .avatar-admin.mobile-only{display:flex}
   .stats-grid{grid-template-columns:1fr 1fr}
   .list-grid{grid-template-columns:1fr}
-  nav.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);justify-content:space-around;padding:.45rem .3rem calc(.45rem + env(safe-area-inset-bottom));z-index:80}
-  nav.bottom-nav .nav-btn{flex-direction:column;align-items:center;gap:2px;font-size:.6rem;padding:.35rem .4rem;border-radius:12px;width:auto;flex:1}
+  nav.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);justify-content:flex-start;gap:.2rem;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scroll-snap-type:x proximity;touch-action:pan-x;scrollbar-width:none;padding:.45rem .5rem calc(.45rem + env(safe-area-inset-bottom));z-index:80}
+  nav.bottom-nav::-webkit-scrollbar{display:none}
+  nav.bottom-nav .nav-btn{flex:0 0 auto;min-width:68px;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:.62rem;padding:.35rem .5rem;border-radius:12px;width:auto;white-space:nowrap;scroll-snap-align:center}
   nav.bottom-nav .nav-btn .ico{font-size:1.25rem;width:auto}
   .fab{position:fixed;right:18px;bottom:88px}
 }
 .fab{display:flex;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--pink-d));color:#fff;font-size:1.7rem;align-items:center;justify-content:center;box-shadow:0 10px 26px rgba(231,84,128,.5);z-index:70;transition:.15s;position:fixed;right:24px;bottom:24px}
 .fab:active{transform:scale(.93)}
 @media(max-width:900px){.fab{bottom:88px;right:18px}}
+
+/* ===== v3: ícone WhatsApp, Meu Plano, pop-up e responsividade ===== */
+.wa-ico{width:1.2em;height:1.2em;fill:#25D366;vertical-align:-.2em;flex:none}
+.nav-btn .ico .wa-ico{width:1.25rem;height:1.25rem;vertical-align:middle}
+.btn .wa-ico{margin-right:.4rem}
+.plan-hero{text-align:center;padding:1.5rem 1rem}
+.plan-hero .ph-ico{font-size:2.5rem}
+.plan-hero h3{font-size:1.15rem;margin:.3rem 0}
+.plan-hero .ph-line{font-size:1.02rem;line-height:1.55;margin:.4rem 0}
+.plan-hero .ph-line b{color:var(--pink-d)}
+.plan-hero .ph-left{display:inline-block;margin-top:.6rem;background:var(--pink-l);color:var(--pink-d);font-weight:700;font-size:.82rem;padding:.4rem 1rem;border-radius:99px}
+.plan-hero.pro .ph-left{background:#e6f6ee;color:var(--ok)}
+.plan-hero.warn .ph-left{background:#fff4d6;color:#9a6b00}
+.plan-hero .ph-plan{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.renew-modal{position:relative;text-align:center;max-width:380px}
+.renew-x{position:absolute;top:.7rem;right:.8rem;width:36px;height:36px;border-radius:50%;background:var(--pink-l);color:var(--pink-d);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.renew-modal .rp-ico{font-size:2.6rem;margin:.4rem 0 .2rem}
+.renew-modal p{color:var(--ink);font-size:1.02rem;font-weight:600;line-height:1.45;margin:.5rem 0 1.1rem}
+img,svg,video,canvas{max-width:100%}
+.content,.main-wrap{min-width:0}
+.header-cta{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:.5rem}
+header.app-top{flex-wrap:wrap;gap:.6rem}
+.sidebar{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.list-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr))}
+.list-grid>*,.appt,.client-row,.svc-row,.pay-row{min-width:0}
+.appt>div,.client-row>div,.svc-row>div,.pay-row>div{min-width:0;overflow-wrap:anywhere}
+.svc-row .svc-ico,.client-row .cavatar{flex:none}
+.day-row .dname{min-width:0}
+.day-row input[type=time]{flex:0 1 100px;min-width:0;width:100px}
+.day-row .switch{flex:none}
+.avatar-admin.mobile-only{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--gold));color:#fff;align-items:center;justify-content:center;font-weight:800;font-size:1.05rem;border:2px solid #fff;box-shadow:0 6px 14px rgba(231,84,128,.3);flex:none}
+@media(max-width:900px){
+  #app header.app-top .header-cta{display:contents}
+  #app header.app-top>div:first-child{flex:1 1 0;min-width:0}
+  #app header.app-top .avatar-admin.mobile-only{order:1}
+  #app header.app-top .btn-new{order:2;flex:1 1 100%;justify-content:center}
+}
+@media(max-height:780px){.sidebar .pro-card{display:none}.sidebar .brand{padding-bottom:.6rem}}
+@media(min-width:901px) and (max-width:1180px){.stats-grid{grid-template-columns:repeat(2,1fr)}.main-wrap{padding:1.6rem 1.4rem 3rem}}
+@media(min-width:1500px){.content{max-width:1180px}}
+@media(max-width:420px){.day-row{gap:.4rem}.day-row input[type=time]{flex-basis:84px;width:84px;padding:.3rem .35rem;font-size:.78rem}.plan-grid{grid-template-columns:1fr}.main-wrap{padding:.9rem .8rem 96px}.btn-new{padding:.6rem .9rem;font-size:.85rem}}
+@media(max-width:360px){html{font-size:15px}.stats-grid{gap:.6rem}}
 </style>
 <base target="_blank">
 </head>
@@ -283,7 +329,8 @@ nav.bottom-nav{display:none}
         <label style="text-align:left">E-mail</label>
         <input id="suEmail" type="email" placeholder="seu@email.com">
         <label style="text-align:left">Senha</label>
-        <input id="suPass" type="password" placeholder="Crie uma senha" onkeydown="if(event.key==='Enter')handleSignup()">
+        <input id="suPass" type="password" placeholder="Crie uma senha" autocomplete="new-password" onkeydown="if(event.key==='Enter')handleSignup()">
+        <small style="display:block;text-align:left;color:var(--muted);margin-top:.3rem">Mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo. Ex: Nail@2026</small>
         <div id="suErr" class="auth-err"></div>
         <button class="btn btn-p" style="margin-top:.6rem" onclick="handleSignup()">Criar conta e testar grátis 🎁</button>
         <small style="display:block;text-align:center;color:var(--muted);margin-top:.6rem">48h de teste grátis • até 3 clientes</small>
@@ -316,7 +363,7 @@ nav.bottom-nav{display:none}
         </div>
       </div>
       <button class="btn btn-line" style="margin-top:.5rem" onclick="resyncPayment()">🔄 Já paguei — verificar pagamento</button>
-      <button class="btn btn-g" style="margin-top:.5rem" onclick="supportWA()">🆘 Falar com o suporte</button>
+      <button class="btn btn-g" style="margin-top:.5rem" onclick="supportWA()"><svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>Falar com o suporte</button>
       <button class="btn btn-danger" style="margin-top:.5rem" onclick="signOutAll()">Sair da conta</button>
       <small style="display:block;margin-top:.9rem;color:var(--muted)">Pagamento seguro via Mercado Pago • Pix ou cartão</small>
     </div>
@@ -359,13 +406,14 @@ nav.bottom-nav{display:none}
     <button class="nav-btn" data-v="financeiro" onclick="go('financeiro')"><span class="ico">💰</span>Caixa</button>
     <button class="nav-btn" data-v="materiais" onclick="go('materiais')"><span class="ico">📦</span>Materiais</button>
     <button class="nav-btn" data-v="perc" onclick="go('perc')"><span class="ico">🧮</span>Porcentagem</button>
+    <button class="nav-btn" onclick="supportWA()" title="Falar com o suporte pelo WhatsApp"><span class="ico"><svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span>Suporte</button>
+    <button class="nav-btn" data-v="plano" onclick="go('plano')"><span class="ico">💎</span>Meu Plano</button>
     <button class="nav-btn" data-v="ajustes" onclick="go('ajustes')"><span class="ico">⚙️</span>Ajustes</button>
     <div class="spacer"></div>
     <div class="pro-card">
       <button class="avatar-admin" onclick="go('ajustes')" title="Perfil">A</button>
       <b>Minha Conta</b><small>Nail Designer ✨</small>
     </div>
-    <button class="nav-btn" onclick="supportWA()"><span class="ico">🆘</span>Suporte</button>
     <button class="nav-btn" onclick="signOutAll()"><span class="ico">🚪</span>Sair</button>
   </aside>
 
@@ -377,7 +425,6 @@ nav.bottom-nav{display:none}
     </div>
     <div class="header-cta">
       <button class="btn-new" id="headerNewBtn" onclick="headerNew()">＋ Novo agendamento</button>
-      <button class="btn-new" style="background:var(--pink-l);color:var(--pink-d);box-shadow:none" onclick="supportWA()" title="Suporte">🆘</button>
       <button class="avatar-admin mobile-only" onclick="go('ajustes')" title="Perfil">A</button>
     </div>
   </header>
@@ -474,17 +521,9 @@ nav.bottom-nav{display:none}
   </section>
 
   <!-- AJUSTES -->
-  <section id="view-ajustes" class="hidden">
-    <div class="sett-group">
-      <h4>🔐 Acesso admin</h4>
-      <p class="hint">Altere o usuário e a senha do painel</p>
-      <div class="row-2">
-        <div><label>Usuário</label><input id="setUser"></div>
-        <div><label>Senha</label><input id="setPass"></div>
-      </div>
-      <button class="btn btn-g" style="margin-top:.8rem" onclick="saveAdmin()">Salvar acesso</button>
-    </div>
+  <section id="view-plano" class="hidden"><div id="planBox"></div></section>
 
+  <section id="view-ajustes" class="hidden">
     <div class="sett-group">
       <h4>🕐 Horários de funcionamento</h4>
       <p class="hint">Defina os dias e horários que atende</p>
@@ -525,8 +564,21 @@ nav.bottom-nav{display:none}
     <button class="nav-btn" data-v="financeiro" onclick="go('financeiro')"><span class="ico">💰</span>Caixa</button>
     <button class="nav-btn" data-v="materiais" onclick="go('materiais')"><span class="ico">📦</span>Materiais</button>
     <button class="nav-btn" data-v="perc" onclick="go('perc')"><span class="ico">🧮</span>Porcentagem</button>
+    <button class="nav-btn" onclick="supportWA()" title="Falar com o suporte pelo WhatsApp"><span class="ico"><svg class="wa-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></span>Suporte</button>
+    <button class="nav-btn" data-v="plano" onclick="go('plano')"><span class="ico">💎</span>Meu Plano</button>
     <button class="nav-btn" data-v="ajustes" onclick="go('ajustes')"><span class="ico">⚙️</span>Ajustes</button>
   </nav>
+</div>
+
+<!-- ===== LEMBRETE DE RENOVAÇÃO ===== -->
+<div id="renewPop" class="modal-bg hidden" style="z-index:260" role="dialog" aria-modal="true" aria-labelledby="renewTitle" onclick="if(event.target===this)closeRenew()">
+  <div class="modal renew-modal">
+    <button class="renew-x" onclick="closeRenew()" aria-label="Fechar" title="Fechar">✕</button>
+    <div class="rp-ico">⏰</div>
+    <h3 id="renewTitle">Lembrete</h3>
+    <p id="renewMsg"></p>
+    <button class="btn btn-p" onclick="closeRenew();go('plano')">Renovar agora</button>
+  </div>
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -564,22 +616,58 @@ function defaultData(){
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 let db = defaultData();
 let sb = null, sbUser = null, myWs = null, mySub = null, adminPwd = null;
-let adminRows = [], adminFilter = 'all';
+let adminRows = [], adminFilter = 'all', adminShown = [];
 
-function normalizeDb(d){
-  db = Object.assign(defaultData(), d || {});
-  if(!db.settings.maintMsg) db.settings.maintMsg = DEFAULT_MAINT_MSG;
-  if(!Array.isArray(db.materials)) db.materials = [];
-  if(!Array.isArray(db.fiados)) db.fiados = [];
-  if(!Array.isArray(db.percCats)) db.percCats = [{id:uid(),name:'Material',pct:10},{id:uid(),name:'Estúdio',pct:20},{id:uid(),name:'Para mim',pct:70}];
+/* ===== sanitização: protege contra dados adulterados e backups maliciosos ===== */
+const SAFE_ID = /^[A-Za-z0-9_-]{1,40}$/;
+const _str = (v,max=500) => String(v==null?'':v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').slice(0,max);
+const _num = (v,d=0) => { v = Number(v); return Number.isFinite(v) ? v : d; };
+const _time = (v,d) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : d;
+const _date = (v,d) => /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : d;
+const _icon = v => _str(v,8).replace(/[<>"'&`\\]/g,'');
+function _extras(o){
+  const r = {};
+  for(const k of Object.keys(o)){
+    if(k==='__proto__' || k==='constructor' || k==='prototype') continue;
+    const v = o[k];
+    if(v===null || typeof v==='boolean' || (typeof v==='number' && Number.isFinite(v))) r[k] = v;
+    else if(typeof v==='string') r[k] = _str(v,1000);
+  }
+  return r;
 }
+function sanitizeDb(d){
+  const base = defaultData();
+  d = (d && typeof d==='object' && !Array.isArray(d)) ? d : {};
+  const idMap = {};
+  const fixId = v => { if(typeof v==='string' && SAFE_ID.test(v)) return v; const n = uid(); if(typeof v==='string') idMap[v] = n; return n; };
+  const ref = v => { if(typeof v!=='string') return null; const x = idMap[v] || v; return SAFE_ID.test(x) ? x : null; };
+  const list = (arr,fn) => Array.isArray(arr) ? arr.filter(x=>x && typeof x==='object' && !Array.isArray(x)).slice(0,20000).map(fn) : null;
+  const out = {};
+  const st = (d.settings && typeof d.settings==='object') ? d.settings : {};
+  const wd = {};
+  for(let i=0;i<7;i++){ const w = (st.workDays && st.workDays[i]) || base.settings.workDays[i]; wd[i] = { on:!!w.on, s:_time(w.s,'09:00'), e:_time(w.e,'18:00') }; }
+  const br = Array.isArray(st.breaks) ? st.breaks.filter(b=>b && typeof b==='object').slice(0,20).map(b=>({ s:_time(b.s,'12:00'), e:_time(b.e,'13:00') })) : base.settings.breaks;
+  out.settings = { workDays:wd, breaks:br, maintMsg:_str(st.maintMsg,1500) || DEFAULT_MAINT_MSG };
+  out.clients = list(d.clients, c=>({ ..._extras(c), id:fixId(c.id), name:_str(c.name,120), phone:_str(c.phone,40), bday:_str(c.bday,20), insta:_str(c.insta,60), obs:_str(c.obs,600) })) || [];
+  out.services = list(d.services, x=>({ ..._extras(x), id:fixId(x.id), name:_str(x.name,120), price:_num(x.price), dur:Math.max(0,Math.round(_num(x.dur,60))), icon:_icon(x.icon)||'💅', active:x.active!==false })) || base.services;
+  out.appointments = list(d.appointments, a=>({ ..._extras(a), id:fixId(a.id), clientId:ref(a.clientId), serviceId:ref(a.serviceId), date:_date(a.date,todayStr()), time:_time(a.time,'09:00'), status:/^[a-zà-ú_-]{1,20}$/i.test(a.status)?a.status:'pendente', paid:!!a.paid, maintDate:_date(a.maintDate,null), price:(a.price==null||a.price==='')?null:_num(a.price) })) || [];
+  out.payments = list(d.payments, p=>({ ..._extras(p), id:fixId(p.id), amount:_num(p.amount), date:_date(p.date,todayStr()), method:/^[a-z]{1,12}$/.test(p.method)?p.method:'outro', clientId:ref(p.clientId), note:_str(p.note,300) })) || [];
+  out.materials = list(d.materials, m=>({ ..._extras(m), id:fixId(m.id), name:_str(m.name,120), qty:_num(m.qty) })) || [];
+  out.fiados = list(d.fiados, f=>({ ..._extras(f), id:fixId(f.id), amount:_num(f.amount), date:_date(f.date,todayStr()), dueDate:_date(f.dueDate,null), clientId:ref(f.clientId), apptId:ref(f.apptId), note:_str(f.note,300) })) || [];
+  out.percCats = list(d.percCats, c=>({ id:fixId(c.id), name:_str(c.name,60), pct:_num(c.pct) })) || [{id:uid(),name:'Material',pct:10},{id:uid(),name:'Estúdio',pct:20},{id:uid(),name:'Para mim',pct:70}];
+  return out;
+}
+function normalizeDb(d){ db = sanitizeDb(d); }
 normalizeDb(null);
 
 let _syncT = null;
 function save(){ if(!sbUser || !myWs) return; clearTimeout(_syncT); _syncT = setTimeout(syncNow, 700); }
 async function syncNow(){
   if(!sbUser || !myWs) return;
-  try{ await sb.from('workspaces').update({ data: db }).eq('user_id', sbUser.id); }catch(e){}
+  try{
+    if(JSON.stringify(db).length > 4000000){ toast('Seus dados estão grandes demais para salvar. Exporte um backup.'); return; }
+    await sb.from('workspaces').update({ data: db }).eq('user_id', sbUser.id);
+  }catch(e){}
 }
 
 /* ================= UTILS ================= */
@@ -593,6 +681,9 @@ function svcById(id){ return db.services.find(s=>s.id===id); }
 function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2200); }
 function esc(s){ return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
+function openExternal(u){ return window.open(u, '_blank', 'noopener,noreferrer'); }
+function openWhatsAppt(id){ const a = db.appointments.find(x=>x.id===id); if(a) openWhats(a.clientId, a); }
+
 /* WhatsApp */
 function waNumber(phone){ let d = String(phone||'').replace(/\D/g,''); if(d && !d.startsWith('55')) d = '55'+d; return d; }
 function openWhats(clientId, appt){
@@ -603,7 +694,7 @@ function openWhats(clientId, appt){
   if(appt){ const s = svcById(appt.serviceId);
     msg += ` Passando para confirmar seu horário: ${fmtDate(appt.date)} às ${appt.time}` + (s?` — ${s.name}`:'') + `. Qualquer imprevisto, me avisa!`;
   } else { msg += ` Tudo bem? Estou confirmando seu próximo horário. Me conta quando puder!`; }
-  window.open('https://wa.me/'+num+'?text='+encodeURIComponent(msg), '_blank');
+  openExternal('https://wa.me/'+num+'?text='+encodeURIComponent(msg));
 }
 
 /* ================= AUTENTICAÇÃO / ASSINATURA / ADMIN ================= */
@@ -620,37 +711,85 @@ function authTab(t){
   $('formSignup').classList.toggle('hidden', t !== 'signup');
   $('liErr').textContent = ''; $('suErr').textContent = '';
 }
+const _fail = { n:0, until:0 };
+function _locked(el){ const w = _fail.until - Date.now(); if(w > 0){ el.textContent = 'Muitas tentativas. Aguarde ' + Math.ceil(w/1000) + 's e tente de novo 🔐'; return true; } return false; }
+function _noteFail(){ _fail.n++; if(_fail.n >= 5) _fail.until = Date.now() + Math.min(30000 * Math.pow(2, _fail.n - 5), 300000); }
+function _okAuth(){ _fail.n = 0; _fail.until = 0; }
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+let _authBusy = false;
+
 async function handleLogin(){
+  if(_authBusy) return;
   const email = $('liEmail').value.trim(), pass = $('liPass').value;
+  $('liErr').textContent = '';
   if(!email || !pass){ $('liErr').textContent = 'Preencha e-mail e senha'; return; }
+  if(_locked($('liErr'))) return;
   if(email.toLowerCase() === 'admin'){ adminLogin(pass); return; }
+  if(!EMAIL_RE.test(email)){ $('liErr').textContent = 'Confira o e-mail digitado'; return; }
+  _authBusy = true;
   try{
     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if(error){ $('liErr').textContent = 'E-mail ou senha incorretos 😕'; return; }
+    if(error){
+      _noteFail();
+      const m = (error.message || '').toLowerCase();
+      $('liErr').textContent = m.includes('confirm') ? 'Confirme seu e-mail antes de entrar (veja sua caixa de entrada e o spam) 📩'
+        : m.includes('invalid') ? 'E-mail ou senha incorretos 😕'
+        : m.includes('rate') ? 'Muitas tentativas. Espere alguns minutos e tente de novo.'
+        : 'Erro ao entrar: ' + error.message;
+      return;
+    }
+    _okAuth();
     const { data:{ session } } = await sb.auth.getSession();
     sbUser = session.user;
     await enterAppFlow();
-  }catch(e){ $('liErr').textContent = 'Erro de conexão. Tente novamente.'; }
+  }catch(e){ $('liErr').textContent = 'Erro: ' + (e.message || e); }
+  finally{ _authBusy = false; }
 }
 async function handleSignup(){
-  const name = $('suName').value.trim(), phone = $('suPhone').value.trim();
+  if(_authBusy) return;
+  const name = $('suName').value.trim().slice(0,80), phone = $('suPhone').value.trim();
   const email = $('suEmail').value.trim(), pass = $('suPass').value;
+  $('suErr').textContent = '';
   if(!name || !email || !pass){ $('suErr').textContent = 'Preencha nome, e-mail e senha'; return; }
+  if(!EMAIL_RE.test(email)){ $('suErr').textContent = 'Confira o e-mail digitado'; return; }
+  if(phone && !/^[0-9()+\-\s]{8,25}$/.test(phone)){ $('suErr').textContent = 'Confira o número de WhatsApp'; return; }
+  if(pass.length < 8){ $('suErr').textContent = 'A senha precisa ter pelo menos 8 caracteres'; return; }
+  _authBusy = true;
   try{
-    const { error } = await sb.auth.signUp({ email, password: pass, options:{ data:{ name, whatsapp: phone } } });
-    if(error){ $('suErr').textContent = error.message.includes('already') ? 'Este e-mail já está cadastrado. Faça login!' : error.message; return; }
-    await sb.auth.signInWithPassword({ email, password: pass });
+    const { data: su, error } = await sb.auth.signUp({ email, password: pass, options:{ data:{ name, whatsapp: phone } } });
+    if(error){
+      const m = (error.message || '').toLowerCase();
+      $('suErr').textContent =
+          m.includes('already') ? 'Este e-mail já está cadastrado. Faça login!'
+        : (m.includes('password') || error.code === 'weak_password') ? 'Senha fraca 🔐 Use pelo menos 8 caracteres com letra maiúscula, minúscula, número e símbolo. Ex: Nail@2026'
+        : (m.includes('rate') || error.status === 429) ? 'Muitas tentativas. Espere alguns minutos e tente de novo.'
+        : m.includes('not allowed') || m.includes('disabled') ? 'Cadastros estão desativados no momento.'
+        : m.includes('valid email') || m.includes('invalid') ? 'Confira o e-mail digitado.'
+        : 'Erro ao criar conta: ' + error.message;
+      return;
+    }
+    if(!su.session){
+      const r = await sb.auth.signInWithPassword({ email, password: pass });
+      if(r.error){
+        $('suErr').textContent = (r.error.message || '').toLowerCase().includes('confirm')
+          ? 'Conta criada! Confirme o e-mail que enviamos para você (veja o spam) e depois faça login 📩'
+          : 'Conta criada, mas não foi possível entrar: ' + r.error.message;
+        return;
+      }
+    }
     const { data:{ session } } = await sb.auth.getSession();
     sbUser = session.user;
     await enterAppFlow();
     toast('Conta criada! Bem-vinda 🎁');
-  }catch(e){ $('suErr').textContent = 'Erro de conexão. Tente novamente.'; }
+  }catch(e){ $('suErr').textContent = 'Erro: ' + (e.message || e); }
+  finally{ _authBusy = false; }
 }
-async function signOutAll(){ try{ await sb.auth.signOut(); }catch(e){} sbUser = null; myWs = null; mySub = null; showScreen('auth'); }
+async function signOutAll(){ try{ await sb.auth.signOut(); }catch(e){} clearInterval(_watchT); _renewShown = false; closeRenew(); sbUser = null; myWs = null; mySub = null; showScreen('auth'); }
 
 /* ---- fluxo de acesso ---- */
 async function loadWorkspace(){
-  const { data } = await sb.from('workspaces').select('*').eq('user_id', sbUser.id).maybeSingle();
+  const { data, error: wsErr } = await sb.from('workspaces').select('*').eq('user_id', sbUser.id).maybeSingle();
+  if(wsErr){ console.error('workspaces (leitura):', wsErr); throw new Error('Banco de dados (workspaces): ' + wsErr.message); }
   if(data){ myWs = data; normalizeDb(data.data); return; }
   db = defaultData(); normalizeDb(null);
   // importa dados antigos do app local, se existirem
@@ -659,13 +798,15 @@ async function loadWorkspace(){
     if(old) normalizeDb(old);
   }catch(e){}
   const meta = sbUser.user_metadata || {};
-  const { data: created } = await sb.from('workspaces')
+  const { data: created, error: insErr } = await sb.from('workspaces')
     .insert({ user_id: sbUser.id, email: sbUser.email, name: meta.name || '', whatsapp: meta.whatsapp || '', data: db })
     .select().single();
+  if(insErr){ console.error('workspaces (criação):', insErr); throw new Error('Banco de dados (workspaces): ' + insErr.message); }
   myWs = created;
 }
 async function loadSubscription(){
-  const { data } = await sb.from('subscriptions').select('*').eq('workspace_id', myWs.id).maybeSingle();
+  const { data, error: subErr } = await sb.from('subscriptions').select('*').eq('workspace_id', myWs.id).maybeSingle();
+  if(subErr){ console.error('subscriptions (leitura):', subErr); throw new Error('Banco de dados (subscriptions): ' + subErr.message); }
   if(data) return data;
   const { data: c } = await sb.from('subscriptions')
     .insert({ workspace_id: myWs.id, status:'trial', trial_ends_at: new Date(Date.now() + 48*3600*1000).toISOString() })
@@ -704,12 +845,14 @@ async function enterAppFlow(){
     return;
   }
   const st = subStatus();
-  if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); }
+  if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); maybeShowRenewPopup(); startAccessWatch(); }
   else showBilling(st);
 }
 function showBilling(st){
   $('billMsg').textContent = st === 'trial_over'
     ? 'Seu teste grátis de 48h terminou 🎁 Assine um plano para continuar usando o Nail Agenda com todos os seus dados salvos.'
+    : st === 'blocked'
+    ? 'Não encontramos o seu período de teste (status: ' + ((mySub && mySub.status) || 'sem registro') + '). Fale com o suporte.'
     : 'Sua assinatura está vencida. Regularize para recuperar o acesso à sua agenda.';
   showScreen('billing');
 }
@@ -729,27 +872,146 @@ async function subscribePlan(plan){
 async function resyncPayment(){
   mySub = await loadSubscription();
   const st = subStatus();
-  if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); toast('Pagamento confirmado! Acesso liberado ✅'); }
+  if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); startAccessWatch(); toast('Pagamento confirmado! Acesso liberado ✅'); }
   else toast('Ainda não identificamos seu pagamento. O Pix pode levar alguns instantes.');
 }
+
+/* ================= MEU PLANO / LEMBRETE / VIGIA DE ACESSO ================= */
+const PLAN_NAMES = { monthly:'Mensal', annual:'Anual' };
+function _fmtDT(iso){ const d = new Date(iso); if(isNaN(d)) return null; return { date:d.toLocaleDateString('pt-BR'), time:d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) }; }
+function _daysLeft(iso){ return Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000); }
+function _leftText(iso){
+  let ms = new Date(iso).getTime() - Date.now();
+  if(!(ms > 0)) return 'expirado';
+  const d = Math.floor(ms/86400000); ms -= d*86400000;
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+  if(d > 0) return d + (d===1?' dia':' dias') + ' e ' + h + 'h';
+  if(h > 0) return h + 'h e ' + m + 'min';
+  return m + ' min';
+}
+function _planCards(renew){
+  const verb = renew ? 'Renovar' : 'Assinar';
+  return `<div class="plan-grid">
+    <div class="plan-card">
+      <div class="p-ico">💅</div><b>Mensal</b>
+      <div class="p-price">R$ 29<span>,90</span></div>
+      <small>cobrança todo mês</small>
+      <button class="btn btn-p" onclick="subscribePlan('monthly')">${verb} mensal</button>
+    </div>
+    <div class="plan-card hot">
+      <div class="p-tag">Melhor valor 🏷️</div>
+      <div class="p-ico">✨</div><b>Anual</b>
+      <div class="p-price">R$ 247<span>,00</span></div>
+      <small>só R$ 20,58/mês</small>
+      <button class="btn btn-p" onclick="subscribePlan('annual')">${verb} anual</button>
+    </div>
+  </div>
+  <small style="display:block;text-align:center;color:var(--muted)">Pagamento seguro via Mercado Pago • Pix ou cartão</small>`;
+}
+function renderPlano(){
+  const box = $('planBox'); if(!box) return;
+  const st = subStatus(), s = mySub;
+  let html = '';
+  if(st === 'trial' && s){
+    const t = _fmtDT(s.trial_ends_at);
+    const warn = _daysLeft(s.trial_ends_at) <= 1 ? ' warn' : '';
+    html = `<div class="sett-group plan-hero${warn}">
+        <div class="ph-ico">🎁</div><h3>Período de teste</h3>
+        <p class="ph-line">${t ? `Seu teste expira no dia <b>${t.date}</b> às <b>${t.time}</b>` : 'Não foi possível ler a data do seu teste.'}</p>
+        <span class="ph-left">Faltam ${_leftText(s.trial_ends_at)}</span>
+      </div>
+      <div class="sett-group">
+        <h4>💎 Torne-se Pro</h4>
+        <p class="hint">Assine para continuar usando sem interrupção. Seus dados continuam salvos.</p>
+        ${_planCards(false)}
+      </div>`;
+  } else if(st === 'active' && s){
+    const t = _fmtDT(s.period_end);
+    const warn = _daysLeft(s.period_end) <= 3 ? ' warn' : '';
+    const pn = PLAN_NAMES[s.plan] ? `<div class="ph-plan">Plano ${PLAN_NAMES[s.plan]}</div>` : '';
+    html = `<div class="sett-group plan-hero pro${warn}">
+        <div class="ph-ico">💎</div><h3>Plano Pro ativo</h3>
+        <p class="ph-line">${t ? `Seu plano vence no dia <b>${t.date}</b> às <b>${t.time}</b>` : 'Não foi possível ler a data de vencimento.'}</p>
+        <span class="ph-left">Faltam ${_leftText(s.period_end)}</span>${pn}
+      </div>
+      <div class="sett-group">
+        <h4>🔄 Renovar plano</h4>
+        <p class="hint">Quer garantir mais um período? Escolha uma opção.</p>
+        ${_planCards(true)}
+      </div>`;
+  } else {
+    html = `<div class="sett-group plan-hero"><div class="ph-ico">🔒</div><p class="ph-line">Não foi possível ler os dados do seu plano agora. Tente novamente em instantes.</p></div>`;
+  }
+  box.innerHTML = html;
+}
+
+let _renewShown = false;
+function maybeShowRenewPopup(){
+  if(_renewShown || !mySub || subStatus() !== 'active' || !mySub.period_end) return;
+  const n = _daysLeft(mySub.period_end);
+  if(n >= 1 && n <= 3){ _renewShown = true; showRenewPopup(n); }
+}
+function showRenewPopup(n){
+  $('renewMsg').textContent = 'Renove seu plano, ele expira em ' + n + (n === 1 ? ' dia' : ' dias');
+  $('renewPop').classList.remove('hidden');
+}
+function closeRenew(){ const p = $('renewPop'); if(p) p.classList.add('hidden'); }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeRenew(); });
+
+let _watchT = null;
+function startAccessWatch(){
+  clearInterval(_watchT);
+  _watchT = setInterval(() => {
+    if(!sbUser || !mySub) return;
+    const st = subStatus();
+    if(st !== 'active' && st !== 'trial'){ clearInterval(_watchT); showBilling(st); }
+  }, 30000);
+}
+async function refreshSub(){
+  if(!sbUser || !myWs) return;
+  try{
+    const s = await loadSubscription();
+    if(s){
+      mySub = s;
+      const st = subStatus();
+      if(st !== 'active' && st !== 'trial') showBilling(st);
+      else if(view === 'plano') renderPlano();
+    }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if(!document.hidden) refreshSub(); });
+
 function supportWA(){
-  window.open('https://wa.me/5562999746553?text=' + encodeURIComponent('Oi! Preciso de ajuda com o Nail Agenda 💅'), '_blank');
+  openExternal('https://wa.me/5562999746553?text=' + encodeURIComponent('Oi! Preciso de ajuda com o Nail Agenda 💅'));
 }
 
 /* ---- painel admin ---- */
 async function adminLogin(pass){
+  if(_authBusy) return;
+  _authBusy = true;
   try{
     const res = await fetch(SUPABASE_URL + '/functions/v1/admin-auth', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'x-admin-password': pass },
       body:'{}'
     });
-    const j = await res.json();
-    if(j.ok){ adminPwd = pass; showScreen('admin'); loadAdminList(); }
-    else $('liErr').textContent = 'Senha de administradora incorreta 🔐';
-  }catch(e){ $('liErr').textContent = 'Erro de conexão. Tente novamente.'; }
+    let j = {}; try{ j = await res.json(); }catch(_){}
+    if(j.ok){ _okAuth(); adminPwd = pass; armAdminIdle(); showScreen('admin'); loadAdminList(); }
+    else if(res.status === 404) $('liErr').textContent = 'A função admin-auth não existe no Supabase (erro 404).';
+    else if(res.status === 401 && (j.message || j.msg)) $('liErr').textContent = 'Supabase recusou a chamada (401): ' + (j.message || j.msg);
+    else if(res.status >= 500) $('liErr').textContent = 'Erro na função admin-auth (' + res.status + ').';
+    else { _noteFail(); $('liErr').textContent = 'Senha de administradora incorreta 🔐'; }
+  }catch(e){ $('liErr').textContent = 'Não consegui falar com a função admin-auth. Ela provavelmente não está publicada no Supabase (ou está bloqueando o acesso).'; }
+  finally{ _authBusy = false; }
 }
-function adminLogout(){ adminPwd = null; showScreen('auth'); }
+let _adminTimer = null;
+function armAdminIdle(){
+  clearTimeout(_adminTimer);
+  if(!adminPwd) return;
+  _adminTimer = setTimeout(() => { adminPwd = null; adminRows = []; adminShown = []; showScreen('auth'); $('liErr').textContent = 'Sessão do admin encerrada por inatividade 🔐'; }, 15*60*1000);
+}
+['click','keydown','touchstart'].forEach(ev => document.addEventListener(ev, armAdminIdle, { passive:true }));
+function adminLogout(){ adminPwd = null; adminRows = []; adminShown = []; clearTimeout(_adminTimer); showScreen('auth'); }
 async function loadAdminList(){
   try{
     const res = await fetch(SUPABASE_URL + '/functions/v1/admin-list', { headers:{ 'x-admin-password': adminPwd } });
@@ -784,6 +1046,7 @@ function renderAdmin(){
   const chipCls = { active:'confirmado', trial:'pendente', past:'cancelado', late:'cancelado' };
   const list = adminRows.map((r,i) => ({ r, st: sts[i] }))
     .filter(x => adminFilter === 'all' || x.st.k === adminFilter || (adminFilter === 'past' && (x.st.k === 'past' || x.st.k === 'late')));
+  adminShown = list;
   $('adminList').innerHTML = list.length ? list.map(({ r, st }, i) => {
     const num = waNumber(r.whatsapp);
     const created = r.created_at ? new Date(r.created_at).toLocaleDateString('pt-BR') : '—';
@@ -794,11 +1057,12 @@ function renderAdmin(){
         <small>📱 ${esc(r.whatsapp || '—')} • conta criada em ${created}</small>
       </div>
       <span class="chip ${chipCls[st.k]}">${st.label}</span>
-      ${num ? `<button class="icon-btn wa" title="Chamar no WhatsApp" onclick="window.open('https://wa.me/${num}','_blank')">💬</button>` : ''}
-      <button class="icon-btn no" title="Excluir do sistema" onclick="adminDelete('${r.id}','${esc(r.name||'')}')">🗑️</button>
+      ${num ? `<button class="icon-btn wa" title="Chamar no WhatsApp" onclick="openExternal('https://wa.me/${num}')">💬</button>` : ''}
+      <button class="icon-btn no" title="Excluir do sistema" onclick="adminDeleteIdx(${i})">🗑️</button>
     </div>`;
   }).join('') : '<div class="empty"><span class="big">🔍</span>Nenhuma conta neste filtro.</div>';
 }
+function adminDeleteIdx(i){ const x = adminShown[i]; if(x && x.r) adminDelete(x.r.id, x.r.name || ''); }
 async function adminDelete(id, name){
   if(!confirm(`Excluir definitivamente a conta de ${name}? Os dados dela serão apagados.`)) return;
   try{
@@ -814,14 +1078,17 @@ async function adminDelete(id, name){
 
 /* ================= NAVEGAÇÃO ================= */
 let view='agenda', selDate=todayStr();
-const TITLES = {agenda:'Agenda', clientes:'Clientes', manutencao:'Manutenção', servicos:'Serviços', financeiro:'Caixa', materiais:'Materiais', perc:'Porcentagem', ajustes:'Ajustes'};
+const TITLES = {agenda:'Agenda', clientes:'Clientes', manutencao:'Manutenção', servicos:'Serviços', financeiro:'Caixa', materiais:'Materiais', perc:'Porcentagem', plano:'Meu Plano', ajustes:'Ajustes'};
 function go(v){
   view=v;
-  ['agenda','clientes','manutencao','servicos','financeiro','materiais','perc','ajustes'].forEach(x=>$('view-'+x).classList.toggle('hidden', x!==v));
+  ['agenda','clientes','manutencao','servicos','financeiro','materiais','perc','plano','ajustes'].forEach(x=>$('view-'+x).classList.toggle('hidden', x!==v));
   document.querySelectorAll('.nav-btn[data-v]').forEach(b=>b.classList.toggle('active', b.dataset.v===v));
+  const _nav = document.querySelector('nav.bottom-nav'), _ab = _nav && _nav.querySelector('.nav-btn.active');
+  if(_ab && _nav.scrollTo) _nav.scrollTo({ left: _ab.offsetLeft - (_nav.clientWidth - _ab.clientWidth)/2, behavior:'smooth' });
   $('pageTitle').textContent = TITLES[v];
   $('headerNewBtn').style.display = v==='agenda' ? '' : 'none';
   render();
+  if(v === 'plano') refreshSub();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function headerNew(){ openApptModal(); }
@@ -838,6 +1105,7 @@ function render(){
   if(view==='manutencao') renderMaintenance();
   if(view==='materiais') renderMaterials();
   if(view==='perc') renderPerc();
+  if(view==='plano') renderPlano();
   if(view==='ajustes') renderSettings();
 }
 
@@ -866,7 +1134,7 @@ function renderAgenda(){
       <div class="acts">
         <button class="icon-btn ok" title="Realizado — registrar recebimento" onclick="openDoneModal('${a.id}')">✓</button>
         <button class="icon-btn no" title="Não realizado / cancelar" onclick="markNotDone('${a.id}')">✗</button>
-        ${c?`<button class="icon-btn wa" title="WhatsApp" onclick='openWhats("${a.clientId}", ${JSON.stringify(a).replace(/'/g,"&#39;")})'>💬</button>`:''}
+        ${c?`<button class="icon-btn wa" title="WhatsApp" onclick="openWhatsAppt('${a.id}')">💬</button>`:''}
         <button class="icon-btn" title="Editar" onclick="openApptModal('${a.id}')">✏️</button>
       </div></div>`;
   }).join('');
@@ -1042,7 +1310,6 @@ function delPay(id){ if(!confirm('Excluir este lançamento?'))return; db.payment
 
 /* ================= AJUSTES ================= */
 function renderSettings(){
-  $('setUser').value=db.settings.adminUser; $('setPass').value=db.settings.adminPass;
   $('workDays').innerHTML=DOW.map((d,i)=>{const w=db.settings.workDays[i];
     return `<div class="day-row"><span class="dname">${d}</span>
       ${w.on?`<input type="time" value="${w.s}" onchange="updDay(${i},'s',this.value)"> <input type="time" value="${w.e}" onchange="updDay(${i},'e',this.value)">`:''}
@@ -1052,11 +1319,6 @@ function renderSettings(){
 function updDay(i,k,v){ db.settings.workDays[i][k]=v; save(); renderSettings(); }
 function addBreak(){ const s=$('breakStart').value,e=$('breakEnd').value; if(!s||!e){toast('Informe início e fim');return;} db.settings.breaks.push({s,e}); save(); renderSettings(); toast('Pausa adicionada'); }
 function delBreak(i){ db.settings.breaks.splice(i,1); save(); renderSettings(); }
-function saveAdmin(){
-  const u=$('setUser').value.trim(), p=$('setPass').value.trim();
-  if(!u||!p){ toast('Usuário e senha não podem ficar vazios'); return; }
-  db.settings.adminUser=u; db.settings.adminPass=p; save(); toast('Acesso atualizado 🔐');
-}
 function exportJSON(){
   const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='nail-agenda-backup-'+todayStr()+'.json'; a.click();
@@ -1064,8 +1326,13 @@ function exportJSON(){
 }
 function importJSON(inp){
   const f=inp.files[0]; if(!f)return;
+  if(f.size>5*1024*1024){ toast('Arquivo muito grande (máximo 5 MB)'); inp.value=''; return; }
   const r=new FileReader();
-  r.onload=e=>{ try{ db=JSON.parse(e.target.result); save(); render(); toast('Dados importados ✅'); }catch(err){ toast('Arquivo inválido 😕'); } };
+  r.onload=e=>{ try{
+    const p=JSON.parse(e.target.result);
+    if(!p || typeof p!=='object' || Array.isArray(p)) throw new Error('formato');
+    normalizeDb(p); save(); render(); toast('Dados importados ✅');
+  }catch(err){ toast('Arquivo inválido 😕'); } };
   r.readAsText(f); inp.value='';
 }
 
@@ -1109,7 +1376,7 @@ function openWhatsMaint(apptId){
     .replaceAll('{nome}', c.name.split(' ')[0])
     .replaceAll('{data}', fmtDate(a.maintDate))
     .replaceAll('{servico}', s ? s.name : 'manutenção');
-  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+  openExternal('https://wa.me/' + num + '?text=' + encodeURIComponent(msg));
 }
 function openMaintMsgModal(){
   openModal(`<div class="grab"></div><h3>💬 Mensagem pronta</h3>
@@ -1141,7 +1408,7 @@ function sendListWA(){
   let msg = '*Tabela de serviços 💅*\n\n'
     + list.map(s => `${s.icon} ${s.name} — ${BRL(s.price)} • ${s.dur}min`).join('\n')
     + '\n\nMe chama para agendar seu horário! ✨';
-  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+  openExternal('https://wa.me/' + num + '?text=' + encodeURIComponent(msg));
   closeModal();
 }
 
@@ -1324,6 +1591,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     $('liErr').textContent = '⚠️ Configure as chaves do Supabase no código (veja o GUIA-DEPLOY).';
     return;
   }
+  if(typeof supabase === 'undefined'){ $('liErr').textContent = 'Não foi possível carregar o sistema. Verifique sua internet e recarregue a página.'; return; }
+  const _lim = { liEmail:120, liPass:72, suName:80, suPhone:25, suEmail:120, suPass:72 };
+  Object.keys(_lim).forEach(id => { const el = $(id); if(el) el.maxLength = _lim[id]; });
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   try{
     const { data:{ session } } = await sb.auth.getSession();
