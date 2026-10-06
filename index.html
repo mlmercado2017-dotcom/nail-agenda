@@ -549,7 +549,7 @@ header.app-top{flex-wrap:wrap;gap:.6rem}
 
     <div class="sett-group">
       <h4>ℹ️ Sobre</h4>
-      <p class="hint">Nail Agenda v2.0 • Feito com 💅 para nail designers • Responsivo, online e offline</p>
+      <p class="hint">Nail Agenda v3.1 • Feito com 💅 para nail designers • Responsivo, online e offline</p>
       <button class="btn btn-danger" style="width:100%" onclick="signOutAll()">🚪 Sair da conta</button>
     </div>
   </section>
@@ -846,7 +846,10 @@ async function enterAppFlow(){
   }
   const st = subStatus();
   if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); maybeShowRenewPopup(); startAccessWatch(); }
-  else showBilling(st);
+  else {
+    showBilling(st);
+    if(location.search.includes('pago=1')){ history.replaceState(null, '', location.pathname); resyncPayment(); }
+  }
 }
 function showBilling(st){
   $('billMsg').textContent = st === 'trial_over'
@@ -869,11 +872,27 @@ async function subscribePlan(plan){
     if(j.url){ location.href = j.url; } else { toast('Erro ao gerar cobrança. Tente novamente.'); }
   }catch(e){ toast('Erro de conexão. Tente novamente.'); }
 }
+let _payChecks = 0;
 async function resyncPayment(){
-  mySub = await loadSubscription();
+  try{
+    mySub = await loadSubscription();
+  }catch(e){}
   const st = subStatus();
-  if(st === 'active' || st === 'trial'){ showScreen('app'); initApp(); startAccessWatch(); toast('Pagamento confirmado! Acesso liberado ✅'); }
-  else toast('Ainda não identificamos seu pagamento. O Pix pode levar alguns instantes.');
+  if(st === 'active' || st === 'trial'){
+    _payChecks = 0;
+    if(location.search.includes('pago=1')) history.replaceState(null, '', location.pathname);
+    showScreen('app'); initApp(); startAccessWatch();
+    toast('Pagamento confirmado! Acesso liberado ✅');
+  } else {
+    _payChecks++;
+    if(_payChecks <= 4){
+      toast('Aguardando confirmação do pagamento... verificando novamente em instantes ⏳');
+      setTimeout(resyncPayment, 12000);
+    } else {
+      _payChecks = 0;
+      toast('Ainda não identificamos seu pagamento. O Pix pode levar alguns minutos — use o botão 🔄 Já paguei.');
+    }
+  }
 }
 
 /* ================= MEU PLANO / LEMBRETE / VIGIA DE ACESSO ================= */
@@ -1092,7 +1111,15 @@ function go(v){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function headerNew(){ openApptModal(); }
-function initApp(){ $('datePicker').value = selDate; render(); }
+function initApp(){
+  $('datePicker').value = selDate;
+  render();
+  // Voltou do Mercado Pago com pagamento? Verifica e libera automaticamente
+  if(location.search.includes('pago=1')){
+    history.replaceState(null, '', location.pathname);
+    resyncPayment();
+  }
+}
 function setDate(v){ selDate=v||todayStr(); render(); }
 function shiftDate(n){ const d=new Date(selDate+'T00:00:00'); d.setDate(d.getDate()+n); selDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); $('datePicker').value=selDate; render(); }
 
