@@ -1324,7 +1324,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     $('liErr').textContent = '⚠️ Configure as chaves do Supabase no código (veja o GUIA-DEPLOY).';
     return;
   }
-  sb = supabase.createClient(https://rayshyuxxlknuwdvpfzx.supabase.co, sb_publishable_HHT2nJGr92Fxcyhkj5MDDQ_uFgKbJs0);
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
