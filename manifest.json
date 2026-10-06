@@ -1,0 +1,10 @@
+{
+  "name": "Nail Agenda",
+  "short_name": "Nail Agenda",
+  "description": "Agenda de unhas completa: agendamentos, clientes, WhatsApp e financeiro.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff5f8",
+  "theme_color": "#e75480"
+}
