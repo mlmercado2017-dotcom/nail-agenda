@@ -304,7 +304,7 @@ header.app-top{flex-wrap:wrap;gap:.6rem}
       <div class="logo">💅</div>
       <h1>Nail <em>Agenda</em></h1>
       <p>Sua agenda de unhas completa: agendamentos, clientes, WhatsApp e financeiro — tudo em um só lugar, direto do celular.</p>
-      <div class="perks"><span>🎁 Teste grátis de 48h</span><span>📅 Agenda inteligente</span><span>💬 Confirmação via WhatsApp</span><span>💰 Controle financeiro</span></div>
+      <div class="perks"><span>🎁 Teste grátis de 7 dias</span><span>📅 Agenda inteligente</span><span>💬 Confirmação via WhatsApp</span><span>💰 Controle financeiro</span></div>
     </div>
     <div class="login-form">
       <div class="mobile-logo">💅</div>
@@ -333,7 +333,7 @@ header.app-top{flex-wrap:wrap;gap:.6rem}
         <small style="display:block;text-align:left;color:var(--muted);margin-top:.3rem">Mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo. Ex: Nail@2026</small>
         <div id="suErr" class="auth-err"></div>
         <button class="btn btn-p" style="margin-top:.6rem" onclick="handleSignup()">Criar conta e testar grátis 🎁</button>
-        <small style="display:block;text-align:center;color:var(--muted);margin-top:.6rem">48h de teste grátis • até 3 clientes</small>
+        <small style="display:block;text-align:center;color:var(--muted);margin-top:.6rem">7 dias de teste grátis • clientes liberados</small>
       </div>
       <div id="authNote" class="auth-err"></div>
     </div>
@@ -391,6 +391,15 @@ header.app-top{flex-wrap:wrap;gap:.6rem}
       <button class="btn btn-line btn-sm" onclick="setAdminFilter('late',this)">Excluir (+7d)</button>
     </div>
     <div id="adminList"></div>
+    <div class="sett-group" style="margin-top:2rem">
+      <h4>⚙️ Configurações de Planos</h4>
+      <p class="hint">Defina os valores que aparecerão para as clientes.</p>
+      <div class="row-2">
+        <div><label>Preço Mensal (R$)</label><input id="admPriceMonthly" type="text" placeholder="Ex: 29.90"></div>
+        <div><label>Preço Anual (R$)</label><input id="admPriceAnnual" type="text" placeholder="Ex: 247.00"></div>
+      </div>
+      <button class="btn btn-p" style="margin-top:.8rem" onclick="saveAppSettings()">Salvar Preços ✨</button>
+    </div>
   </div>
 </div>
 
@@ -613,9 +622,17 @@ function defaultData(){
     appointments:[], payments:[], materials:[]
   };
 }
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+async function fetchAppSettings(){
+  try{
+    const { data, error } = await sb.from('global_settings').select('*');
+    if(data && !error){
+      data.forEach(row => { appSettings[row.key] = row.value; });
+    }
+  }catch(e){ console.error('Erro ao carregar settings:', e); }
+}
 let db = defaultData();
 let sb = null, sbUser = null, myWs = null, mySub = null, adminPwd = null;
+let appSettings = { monthly_price: '29.90', annual_price: '247.00', trial_days: '7' };
 let adminRows = [], adminFilter = 'all', adminShown = [];
 
 /* ===== sanitização: protege contra dados adulterados e backups maliciosos ===== */
@@ -809,7 +826,7 @@ async function loadSubscription(){
   if(subErr){ console.error('subscriptions (leitura):', subErr); throw new Error('Banco de dados (subscriptions): ' + subErr.message); }
   if(data) return data;
   const { data: c } = await sb.from('subscriptions')
-    .insert({ workspace_id: myWs.id, status:'trial', trial_ends_at: new Date(Date.now() + 48*3600*1000).toISOString() })
+    .insert({ workspace_id: myWs.id, status:'trial', trial_ends_at: new Date(Date.now() + 7*24*3600*1000).toISOString() })
     .select().single();
   return c;
 }
@@ -853,10 +870,17 @@ async function enterAppFlow(){
 }
 function showBilling(st){
   $('billMsg').textContent = st === 'trial_over'
-    ? 'Seu teste grátis de 48h terminou 🎁 Assine um plano para continuar usando o Nail Agenda com todos os seus dados salvos.'
+    ? 'Seu teste grátis de 7 dias terminou 🎁 Assine um plano para continuar usando o Nail Agenda com todos os seus dados salvos.'
     : st === 'blocked'
     ? 'Não encontramos o seu período de teste (status: ' + ((mySub && mySub.status) || 'sem registro') + '). Fale com o suporte.'
     : 'Sua assinatura está vencida. Regularize para recuperar o acesso à sua agenda.';
+
+  // Atualiza preços dinamicamente na tela de billing
+  const monthlyEl = document.querySelector('#billingScreen .plan-card:first-child .p-price');
+  const annualEl = document.querySelector('#billingScreen .plan-card.hot .p-price');
+  if(monthlyEl) monthlyEl.textContent = 'R$ ' + appSettings.monthly_price;
+  if(annualEl) annualEl.textContent = 'R$ ' + appSettings.annual_price;
+
   showScreen('billing');
 }
 async function subscribePlan(plan){
@@ -913,15 +937,15 @@ function _planCards(renew){
   return `<div class="plan-grid">
     <div class="plan-card">
       <div class="p-ico">💅</div><b>Mensal</b>
-      <div class="p-price">R$ 29<span>,90</span></div>
+      <div class="p-price">R$ ${appSettings.monthly_price}</div>
       <small>cobrança todo mês</small>
       <button class="btn btn-p" onclick="subscribePlan('monthly')">${verb} mensal</button>
     </div>
     <div class="plan-card hot">
       <div class="p-tag">Melhor valor 🏷️</div>
       <div class="p-ico">✨</div><b>Anual</b>
-      <div class="p-price">R$ 247<span>,00</span></div>
-      <small>só R$ 20,58/mês</small>
+      <div class="p-price">R$ ${appSettings.annual_price}</div>
+      <small>só R$ ${BRL(Number(appSettings.annual_price)/12)}/mês</small>
       <button class="btn btn-p" onclick="subscribePlan('annual')">${verb} anual</button>
     </div>
   </div>
@@ -1036,6 +1060,11 @@ async function loadAdminList(){
     const res = await fetch(SUPABASE_URL + '/functions/v1/admin-list', { headers:{ 'x-admin-password': adminPwd } });
     const j = await res.json();
     adminRows = j.rows || [];
+
+    // Carrega preços nos inputs do admin
+    $('admPriceMonthly').value = appSettings.monthly_price;
+    $('admPriceAnnual').value = appSettings.annual_price;
+
     renderAdmin();
   }catch(e){ toast('Erro ao carregar a lista'); }
 }
@@ -1092,6 +1121,25 @@ async function adminDelete(id, name){
     });
     const j = await res.json();
     if(j.ok){ toast('Conta excluída 🗑️'); loadAdminList(); } else toast('Erro ao excluir');
+  }catch(e){ toast('Erro de conexão'); }
+}
+
+async function saveAppSettings(){
+  if(!adminPwd) return;
+  const monthly = $('admPriceMonthly').value.trim();
+  const annual = $('admPriceAnnual').value.trim();
+  if(!monthly || !annual){ toast('Informe os dois preços'); return; }
+  try{
+    const res = await fetch(SUPABASE_URL + '/functions/v1/admin-settings', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPwd },
+      body: JSON.stringify({ monthly_price: monthly, annual_price: annual })
+    });
+    if(res.ok){
+      appSettings.monthly_price = monthly;
+      appSettings.annual_price = annual;
+      toast('Preços atualizados com sucesso! ✨');
+    } else { toast('Erro ao salvar preços'); }
   }catch(e){ toast('Erro de conexão'); }
 }
 
@@ -1243,7 +1291,7 @@ function openClientModal(id){
 function saveClient(id){
   const data={ name:$('mcName').value.trim(), phone:$('mcPhone').value.trim(), bday:$('mcBday').value.trim(), insta:$('mcInsta').value.trim(), obs:$('mcObs').value.trim() };
   if(!data.name){ toast('Informe o nome'); return; }
-  if(!id && subStatus() === 'trial' && db.clients.length >= 3){ toast('Teste grátis: limite de 3 clientes 😊 Assine um plano para adicionar mais!'); return; }
+  if(!id && subStatus() === 'trial' && false){ toast('Teste grátis: limite de 3 clientes 😊 Assine um plano para adicionar mais!'); return; }
   if(id) Object.assign(clientById(id), data);
   else db.clients.push({id:uid(), ...data});
   save(); closeModal(); render(); toast('Cliente salva 💖');
@@ -1619,6 +1667,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   if(typeof supabase === 'undefined'){ $('liErr').textContent = 'Não foi possível carregar o sistema. Verifique sua internet e recarregue a página.'; return; }
+
+  await fetchAppSettings(); // Carrega preços antes de tudo
+
   const _lim = { liEmail:120, liPass:72, suName:80, suPhone:25, suEmail:120, suPass:72 };
   Object.keys(_lim).forEach(id => { const el = $(id); if(el) el.maxLength = _lim[id]; });
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
