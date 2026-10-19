@@ -607,17 +607,22 @@ const DEFAULT_MAINT_MSG = "Oi {nome}! Aqui é da Nail Agenda 💅\nVocê fez {se
 const DOW_S = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const SVC_ICONS = ['💅','💎','✨','🦶','🎨','🌸','💖','⭐'];
 
-// Variáveis de controle de autenticação (Movidas para o topo para evitar ReferenceError)
+// Variáveis de controle de autenticação e gerador de IDs (precisam existir ANTES de qualquer uso)
 let _authBusy = false;
-const _fail = { n:0, until:0 };
-
+const _fail = { n: 0, until: 0 };
+function uid(){
+  try{ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); }catch(e){}
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
+// Preço vindo do banco (aceita "29.90" ou "29,90") -> número
+function priceNum(v, d){ const n = Number(String(v == null ? '' : v).trim().replace(',', '.')); return Number.isFinite(n) && n > 0 ? n : d; }
 
 function defaultData(){
   const wd = {};
   for(let i=0;i<7;i++) wd[i] = {on: i>0 && i<6, s:'09:00', e:'19:00'};
   wd[6] = {on:true, s:'08:00', e:'14:00'};
   return {
-    settings:{adminUser:'admin', adminPass:'nail2026', workDays:wd, breaks:[{s:'12:00',e:'13:00'}], maintMsg:DEFAULT_MAINT_MSG},
+    settings:{workDays:wd, breaks:[{s:'12:00',e:'13:00'}], maintMsg:DEFAULT_MAINT_MSG},
     clients:[], services:[
       {id:uid(), name:'Alongamento em Gel', price:120, dur:120, icon:'💅', active:true},
       {id:uid(), name:'Fibra de Vidro', price:140, dur:150, icon:'💎', active:true},
@@ -631,10 +636,11 @@ function defaultData(){
 }
 async function fetchAppSettings(){
   try{
+    if(!sb) return;
     const { data, error } = await sb.from('global_settings').select('*');
     if(data && !error){
-      data.forEach(row => { appSettings[row.key] = row.value; });
-    }
+      data.forEach(row => { if(row && typeof row.key === 'string' && row.key in appSettings) appSettings[row.key] = String(row.value); });
+    } else if(error){ console.warn('global_settings:', error.message); }
   }catch(e){ console.error('Erro ao carregar settings:', e); }
 }
 let db = defaultData();
@@ -734,12 +740,10 @@ function authTab(t){
   $('formSignup').classList.toggle('hidden', t !== 'signup');
   $('liErr').textContent = ''; $('suErr').textContent = '';
 }
-const _fail = { n:0, until:0 };
 function _locked(el){ const w = _fail.until - Date.now(); if(w > 0){ el.textContent = 'Muitas tentativas. Aguarde ' + Math.ceil(w/1000) + 's e tente de novo 🔐'; return true; } return false; }
 function _noteFail(){ _fail.n++; if(_fail.n >= 5) _fail.until = Date.now() + Math.min(30000 * Math.pow(2, _fail.n - 5), 300000); }
 function _okAuth(){ _fail.n = 0; _fail.until = 0; }
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-let _authBusy = false;
 
 async function handleLogin(){
   if(_authBusy) return;
@@ -749,6 +753,7 @@ async function handleLogin(){
   if(_locked($('liErr'))) return;
   if(email.toLowerCase() === 'admin'){ adminLogin(pass); return; }
   if(!EMAIL_RE.test(email)){ $('liErr').textContent = 'Confira o e-mail digitado'; return; }
+  if(!sb){ $('liErr').textContent = 'Sistema ainda carregando. Recarregue a página e tente de novo.'; return; }
   _authBusy = true;
   try{
     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
@@ -777,6 +782,7 @@ async function handleSignup(){
   if(!EMAIL_RE.test(email)){ $('suErr').textContent = 'Confira o e-mail digitado'; return; }
   if(phone && !/^[0-9()+\-\s]{8,25}$/.test(phone)){ $('suErr').textContent = 'Confira o número de WhatsApp'; return; }
   if(pass.length < 8){ $('suErr').textContent = 'A senha precisa ter pelo menos 8 caracteres'; return; }
+  if(!sb){ $('suErr').textContent = 'Sistema ainda carregando. Recarregue a página e tente de novo.'; return; }
   _authBusy = true;
   try{
     const { data: su, error } = await sb.auth.signUp({ email, password: pass, options:{ data:{ name, whatsapp: phone } } });
@@ -832,7 +838,7 @@ async function loadSubscription(){
   if(subErr){ console.error('subscriptions (leitura):', subErr); throw new Error('Banco de dados (subscriptions): ' + subErr.message); }
   if(data) return data;
   const { data: c } = await sb.from('subscriptions')
-    .insert({ workspace_id: myWs.id, status:'trial', trial_ends_at: new Date(Date.now() + 7*24*3600*1000).toISOString() })
+    .insert({ workspace_id: myWs.id, status:'trial', trial_ends_at: new Date(Date.now() + priceNum(appSettings.trial_days, 7)*24*3600*1000).toISOString() })
     .select().single();
   return c;
 }
@@ -884,8 +890,10 @@ function showBilling(st){
   // Atualiza preços dinamicamente na tela de billing
   const monthlyEl = document.querySelector('#billingScreen .plan-card:first-child .p-price');
   const annualEl = document.querySelector('#billingScreen .plan-card.hot .p-price');
-  if(monthlyEl) monthlyEl.textContent = 'R$ ' + appSettings.monthly_price;
-  if(annualEl) annualEl.textContent = 'R$ ' + appSettings.annual_price;
+  if(monthlyEl) monthlyEl.textContent = BRL(priceNum(appSettings.monthly_price, 29.9));
+  if(annualEl) annualEl.textContent = BRL(priceNum(appSettings.annual_price, 247));
+  const annSmall = document.querySelector('#billingScreen .plan-card.hot small');
+  if(annSmall) annSmall.textContent = 'só ' + BRL(priceNum(appSettings.annual_price, 247)/12) + '/mês';
 
   showScreen('billing');
 }
@@ -943,15 +951,15 @@ function _planCards(renew){
   return `<div class="plan-grid">
     <div class="plan-card">
       <div class="p-ico">💅</div><b>Mensal</b>
-      <div class="p-price">R$ ${appSettings.monthly_price}</div>
+      <div class="p-price">${BRL(priceNum(appSettings.monthly_price, 29.9))}</div>
       <small>cobrança todo mês</small>
       <button class="btn btn-p" onclick="subscribePlan('monthly')">${verb} mensal</button>
     </div>
     <div class="plan-card hot">
       <div class="p-tag">Melhor valor 🏷️</div>
       <div class="p-ico">✨</div><b>Anual</b>
-      <div class="p-price">R$ ${appSettings.annual_price}</div>
-      <small>só R$ ${BRL(Number(appSettings.annual_price)/12)}/mês</small>
+      <div class="p-price">${BRL(priceNum(appSettings.annual_price, 247))}</div>
+      <small>só ${BRL(priceNum(appSettings.annual_price, 247)/12)}/mês</small>
       <button class="btn btn-p" onclick="subscribePlan('annual')">${verb} anual</button>
     </div>
   </div>
@@ -1132,9 +1140,9 @@ async function adminDelete(id, name){
 
 async function saveAppSettings(){
   if(!adminPwd) return;
-  const monthly = $('admPriceMonthly').value.trim();
-  const annual = $('admPriceAnnual').value.trim();
-  if(!monthly || !annual){ toast('Informe os dois preços'); return; }
+  const mN = priceNum($('admPriceMonthly').value, null), aN = priceNum($('admPriceAnnual').value, null);
+  if(mN == null || aN == null){ toast('Informe os dois preços (ex: 29,90)'); return; }
+  const monthly = mN.toFixed(2), annual = aN.toFixed(2);
   try{
     const res = await fetch(SUPABASE_URL + '/functions/v1/admin-settings', {
       method:'POST',
@@ -1144,8 +1152,12 @@ async function saveAppSettings(){
     if(res.ok){
       appSettings.monthly_price = monthly;
       appSettings.annual_price = annual;
+      $('admPriceMonthly').value = monthly; $('admPriceAnnual').value = annual;
       toast('Preços atualizados com sucesso! ✨');
-    } else { toast('Erro ao salvar preços'); }
+    } else {
+      let m = ''; try{ const j = await res.json(); m = j.error || j.message || ''; }catch(_){}
+      toast(res.status === 404 ? 'Função admin-settings não publicada no Supabase' : 'Erro ao salvar preços' + (m ? ': ' + m : ''));
+    }
   }catch(e){ toast('Erro de conexão'); }
 }
 
@@ -1674,11 +1686,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   if(typeof supabase === 'undefined'){ $('liErr').textContent = 'Não foi possível carregar o sistema. Verifique sua internet e recarregue a página.'; return; }
 
-  await fetchAppSettings(); // Carrega preços antes de tudo
-
   const _lim = { liEmail:120, liPass:72, suName:80, suPhone:25, suEmail:120, suPass:72 };
   Object.keys(_lim).forEach(id => { const el = $(id); if(el) el.maxLength = _lim[id]; });
+  // O cliente Supabase precisa ser criado ANTES de buscar os preços
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  await fetchAppSettings();
   try{
     const { data:{ session } } = await sb.auth.getSession();
     if(session){
