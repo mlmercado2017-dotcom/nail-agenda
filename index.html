@@ -706,7 +706,7 @@ function fmtDate(d){ const dt = typeof d==='string' ? new Date(d+'T00:00:00') : 
 function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function clientById(id){ return db.clients.find(c=>c.id===id); }
 function svcById(id){ return db.services.find(s=>s.id===id); }
-function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2200); }
+function toast(msg, ms){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(), ms || 2200); }
 function esc(s){ return String(s??'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
 
@@ -887,15 +887,22 @@ function showBilling(st){
     ? 'Não encontramos o seu período de teste (status: ' + ((mySub && mySub.status) || 'sem registro') + '). Fale com o suporte.'
     : 'Sua assinatura está vencida. Regularize para recuperar o acesso à sua agenda.';
 
-  // Atualiza preços dinamicamente na tela de billing
+  applyBillingPrices();
+  showScreen('billing');
+}
+function applyBillingPrices(){
   const monthlyEl = document.querySelector('#billingScreen .plan-card:first-child .p-price');
   const annualEl = document.querySelector('#billingScreen .plan-card.hot .p-price');
   if(monthlyEl) monthlyEl.textContent = BRL(priceNum(appSettings.monthly_price, 29.9));
   if(annualEl) annualEl.textContent = BRL(priceNum(appSettings.annual_price, 247));
   const annSmall = document.querySelector('#billingScreen .plan-card.hot small');
   if(annSmall) annSmall.textContent = 'só ' + BRL(priceNum(appSettings.annual_price, 247)/12) + '/mês';
-
-  showScreen('billing');
+}
+// Busca os preços atuais no banco e atualiza qualquer tela que os mostre
+async function refreshPrices(){
+  await fetchAppSettings();
+  applyBillingPrices();
+  if(typeof view !== 'undefined' && view === 'plano' && mySub) renderPlano();
 }
 async function subscribePlan(plan){
   toast('Abrindo o pagamento seguro...');
@@ -1036,7 +1043,7 @@ async function refreshSub(){
     }
   }catch(e){}
 }
-document.addEventListener('visibilitychange', () => { if(!document.hidden) refreshSub(); });
+document.addEventListener('visibilitychange', () => { if(!document.hidden){ refreshSub(); if(sb) refreshPrices(); } });
 
 function supportWA(){
   openExternal('https://wa.me/5562999746553?text=' + encodeURIComponent('Oi! Preciso de ajuda com o Nail Agenda 💅'));
@@ -1075,7 +1082,8 @@ async function loadAdminList(){
     const j = await res.json();
     adminRows = j.rows || [];
 
-    // Carrega preços nos inputs do admin
+    // Carrega os preços mais recentes do banco nos campos do admin
+    await fetchAppSettings();
     $('admPriceMonthly').value = appSettings.monthly_price;
     $('admPriceAnnual').value = appSettings.annual_price;
 
@@ -1143,22 +1151,33 @@ async function saveAppSettings(){
   const mN = priceNum($('admPriceMonthly').value, null), aN = priceNum($('admPriceAnnual').value, null);
   if(mN == null || aN == null){ toast('Informe os dois preços (ex: 29,90)'); return; }
   const monthly = mN.toFixed(2), annual = aN.toFixed(2);
+  let res;
   try{
-    const res = await fetch(SUPABASE_URL + '/functions/v1/admin-settings', {
+    res = await fetch(SUPABASE_URL + '/functions/v1/admin-settings', {
       method:'POST',
-      headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPwd },
+      headers:{ 'Content-Type':'application/json', 'x-admin-password': adminPwd, 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
       body: JSON.stringify({ monthly_price: monthly, annual_price: annual })
     });
-    if(res.ok){
-      appSettings.monthly_price = monthly;
-      appSettings.annual_price = annual;
-      $('admPriceMonthly').value = monthly; $('admPriceAnnual').value = annual;
-      toast('Preços atualizados com sucesso! ✨');
-    } else {
-      let m = ''; try{ const j = await res.json(); m = j.error || j.message || ''; }catch(_){}
-      toast(res.status === 404 ? 'Função admin-settings não publicada no Supabase' : 'Erro ao salvar preços' + (m ? ': ' + m : ''));
-    }
-  }catch(e){ toast('Erro de conexão'); }
+  }catch(e){
+    console.error('admin-settings (rede/CORS):', e);
+    toast('Não consegui falar com a função admin-settings (rede ou CORS). Veja o guia.', 6000);
+    return;
+  }
+  if(!res.ok){
+    let m = ''; try{ const j = await res.json(); m = j.error || j.message || j.msg || ''; }catch(_){}
+    console.error('admin-settings', res.status, m);
+    toast('Erro ao salvar preços (' + res.status + ')' + (m ? ': ' + m : ''), 6000);
+    return;
+  }
+  // Confirma de verdade: lê a tabela de novo e compara com o que foi digitado
+  await fetchAppSettings();
+  const gravou = priceNum(appSettings.monthly_price, -1) === mN && priceNum(appSettings.annual_price, -1) === aN;
+  if(gravou){
+    $('admPriceMonthly').value = monthly; $('admPriceAnnual').value = annual;
+    toast('Preços salvos! Os clientes verão o novo valor ao abrir ou recarregar ✨', 4000);
+  } else {
+    toast('A função respondeu OK, mas o preço NÃO foi gravado na tabela global_settings. Confira a função/tabela.', 7000);
+  }
 }
 
 /* ================= NAVEGAÇÃO ================= */
@@ -1173,7 +1192,7 @@ function go(v){
   $('pageTitle').textContent = TITLES[v];
   $('headerNewBtn').style.display = v==='agenda' ? '' : 'none';
   render();
-  if(v === 'plano') refreshSub();
+  if(v === 'plano'){ refreshSub(); refreshPrices(); }
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function headerNew(){ openApptModal(); }
