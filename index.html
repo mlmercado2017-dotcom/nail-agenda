@@ -607,6 +607,10 @@ const DEFAULT_MAINT_MSG = "Oi {nome}! Aqui é da Nail Agenda 💅\nVocê fez {se
 const DOW_S = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const SVC_ICONS = ['💅','💎','✨','🦶','🎨','🌸','💖','⭐'];
 
+// Variáveis de controle de autenticação (Movidas para o topo para evitar ReferenceError)
+let _authBusy = false;
+const _fail = { n:0, until:0 };
+
 
 function defaultData(){
   const wd = {};
